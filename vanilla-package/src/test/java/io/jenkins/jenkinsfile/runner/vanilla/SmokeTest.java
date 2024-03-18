@@ -104,13 +104,12 @@ public class SmokeTest {
     }
 
     @Test
-    @Ignore
     public void shouldFailWithWrongJenkinsfile() throws Throwable {
         File jenkinsfile = new File(tmp.getRoot(), "Jenkinsfile");
 
         int result = new JFRTestUtil().run(jenkinsfile);
         assertThat("JFR should fail when there is no Jenkinsfile", result, not(equalTo(0)));
-        assertThat(systemOut.getLog(), containsString("NoSuchFIleException"));
+        assertThat(systemOut.getLog(), containsString("NoSuchFileException"));
     }
 
     // TODO: uncomment once JFR can do something about timeouts internally
