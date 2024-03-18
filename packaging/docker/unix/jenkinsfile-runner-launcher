@@ -7,6 +7,10 @@ if [ -n "$JDK_11" ] ; then
   export JAVA_OPTS="--illegal-access=permit $JAVA_OPTS"
 fi
 
+if [ -n "$JDK_17" ] ; then
+  export JAVA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.logging/java.util.logging=ALL-UNNAMED"
+fi
+
 # check if the user has provided a path to the file
 if [ -z "${JENKINSFILE_PATH}" ] ; then
   if [ -f "/workspace/Jenkinsfile" ] ; then
@@ -20,8 +24,20 @@ if [ -z "${JENKINSFILE_PATH}" ] ; then
 fi
 
 /app/bin/jenkinsfile-runner \
+    --runHome /home \
     --jenkins-war /app/jenkins \
     --plugins /usr/share/jenkins/ref/plugins \
     --file ${JENKINSFILE_PATH} \
-    --runWorkspace /build \
-    "$@"
+    "$@" \
+    --runWorkspace /workspace \
+    -u \
+    --arg MAVEN_SETTINGS_ID="maven_settings" \
+    --arg TALEND_CI_BUILD_OPTIONS="$TALEND_CI_BUILD_OPTIONS" \
+    --arg MVN_GOALS="$MVN_GOALS" \
+    --arg MVN_EXTRA_PARAMS="$MVN_EXTRA_PARAMS" \
+    --arg TALEND_CI_RUN_CONFIG="$TALEND_CI_RUN_CONFIG" \
+    --arg GIT_CREDENTIALS_ID="$GIT_CREDENTIALS_ID" \
+    --arg CI_BUILDER_VERSION="$CI_BUILDER_VERSION" \
+    --arg GIT_PROJECT_LIST="$GIT_PROJECT_LIST" \
+    --arg JOBS_TO_BUILD="$JOBS_TO_BUILD" \
+    --arg PROJECT_TO_BUILD="$PROJECT_TO_BUILD" 
